@@ -1,21 +1,47 @@
 import nltk
 import os
 
-os.environ[os.environ.get('cert_file_default')] = os.environ.get('cert_file_name')
-nltk.download('maxent_ne_chunker')
+def get_entities(text):
+    try:
+        os.environ[os.environ.get('cert_file_default')] = os.environ.get('cert_file_name')
+        nltk.download('maxent_ne_chunker')
+        tokens = nltk.word_tokenize(text)
+        tagged_tokens = nltk.pos_tag(tokens)
+        ne_tree = nltk.ne_chunk(tagged_tokens)
+        entities = []
+        organizations = []
+        gpe = []
+        locations = []
+        others = []
 
-# Sample text
-text = 'Text To Check '
+        for subtree in ne_tree.subtrees():
+            if subtree.label() == 'PERSON':
+                entities.append(' '.join([token for token, pos in subtree.leaves()]))
+            elif subtree.label() == 'ORGANIZATION':
+                organizations.append(' '.join([token for token, pos in subtree.leaves()]))
+            elif subtree.label() == 'GPE':
+                gpe.append(' '.join([token for token, pos in subtree.leaves()]))
+            elif subtree.label() == 'LOCATION':
+                locations.append(' '.join([token for token, pos in subtree.leaves()]))
+            else:
+                others.append(' '.join([token for token, pos in subtree.leaves()]))
 
-# Tokenize the text
-tokens = nltk.word_tokenize(text)
+        # Convert entities to a delimiter-separated string
+        entities_csv = ":::".join(entities)
+        organizations_csv = ":::".join(organizations)
+        gpe_csv = ":::".join(gpe)
+        locations_csv = ":::".join(locations)
+        others_csv = ":::".join(others)
 
-# Part-of-speech (POS) tag the tokens
-tagged_tokens = nltk.pos_tag(tokens)
-
-# Perform named entity recognition (NER)
-ne_tree = nltk.ne_chunk(tagged_tokens)
-
-# Print the named entities
-for subtree in ne_tree.subtrees():
-    print(subtree.leaves())
+        # Make the entities, organizations, gpe, locations and others as a dictionary
+        entities_dict = {
+            "entities": entities_csv,
+            "organizations": organizations_csv,
+            "gpe": gpe_csv,
+            "locations": locations_csv,
+            "others": others_csv
+        }
+        return entities_dict
+    except Exception as e:
+        print(f"Error in get_entities: {e}")
+        return {"entities": ""}

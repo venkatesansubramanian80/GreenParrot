@@ -6,6 +6,9 @@ from datetime import date
 import os
 from sqlalchemy import create_engine
 import pandas as pd
+from POC.topic_extractor import perform_topic_extractor
+from POC.ner_extractor import get_entities
+from POC.opinion_mining import get_sentiment
 
 def sqlite_db_connection():
     if not os.path.exists('stocks.db'):
@@ -67,6 +70,12 @@ def financial_strength_retreival(symbol, influx_frendly_data, api_key, function,
     return financial_strength, sqlite_financial_strength
 
 def fundamental_analysis(symbol, current_date, influx_frendly_data):
+    def merge_four_dicts(x, y, z, a):
+        z.update(x)
+        z.update(y)
+        z.update(a)
+        return z
+
     url = os.environ.get('Fundamental_News_Provider')
     querystring = {"category": symbol}
     headers = {
@@ -92,13 +101,17 @@ def fundamental_analysis(symbol, current_date, influx_frendly_data):
         ) for news_item in data
     ]
 
-    sqlite_news_list = [{
-        "date_value": current_date,
-        "Title": news_item['title'],
-        "Source": news_item['source'],
-        "symbol": symbol,
-        "guid": news_item['guid']
-    } for news_item in data]
+    sqlite_news_list = [merge_four_dicts(
+        {
+            "date_value": current_date,
+            "Title": news_item['title'],
+            "Source": news_item['source'],
+            "symbol": symbol,
+            "guid": news_item['guid']
+        },
+        perform_topic_extractor([news_item['title']]),
+        get_entities(news_item['title']),
+        get_sentiment(news_item['title'])) for news_item in data]
 
     return news_list, sqlite_news_list
 
