@@ -5,6 +5,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 from datetime import date
 import os
 from sqlalchemy import create_engine
+import pandas as pd
 
 def sqlite_db_connection():
     if not os.path.exists('stocks.db'):
@@ -135,3 +136,10 @@ def execute_stock(symbol):
     full_list = sum([financial_strength, news_list, technical_data[:30]], [])
     insert_into_influx(full_list)
 
+def process_row(row):
+    symbol = row['Symbol']
+    execute_stock(symbol)
+
+if __name__ == '__main__':
+    df_stocks = pd.read_csv('stocks-list.csv')
+    df_stocks.apply(process_row, axis=1)
