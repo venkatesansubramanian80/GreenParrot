@@ -4,6 +4,13 @@ import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 from datetime import date
 import os
+from sqlalchemy import create_engine
+
+def sqlite_db_connection():
+    if not os.path.exists('stocks.db'):
+        open('stocks.db', 'a').close()
+    engine = create_engine('sqlite:///stocks.db')
+    return engine
 
 def financial_strength_retreival(symbol, influx_frendly_data, api_key, function, current_date):
     url = f"{os.environ.get('Fin_Stren_Provider')}?function={function}&symbol={symbol}&apikey={api_key}"
@@ -21,6 +28,8 @@ def financial_strength_retreival(symbol, influx_frendly_data, api_key, function,
 
     response = requests.get(url)
     data = json.loads(response.text)
+
+
 
     total_liabilities = float(data["annualReports"][0]["totalLiabilities"])
     total_equity = float(data["annualReports"][0]["totalShareholderEquity"])
