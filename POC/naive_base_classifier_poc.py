@@ -75,5 +75,7 @@ print(nltk.classify.accuracy(classifier, test_set))
 #Print the most informative features
 classifier.show_most_informative_features(10)
 
+save_classifier(classifier, 'classifier.pickle')
+
 #Print the sentiment of the title
 print(classifier.classify(feature_extractor("Bill Gross Scoops up Regional Bank Stocks".split())))
