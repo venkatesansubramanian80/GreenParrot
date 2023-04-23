@@ -4,10 +4,15 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 nltk.download('vader_lexicon')
 
 def get_sentiment(text):
-    sia = SentimentIntensityAnalyzer()
-    sentiment_scores = sia.polarity_scores(text)
-    return sentiment_scores['compound']
+    try:
+        sia = SentimentIntensityAnalyzer()
+        sentiment_scores = sia.polarity_scores(text)
 
-text = "I absolutely love this product! It's amazing!"
-sentiment_score = get_sentiment(text)
-print(sentiment_score)
+        # Convert sentiment_scores to a dictionary with key as "sentiment"
+        sentiment_dict = {
+            "sentiment": sentiment_scores['compound']
+        }
+        return sentiment_dict
+    except Exception as e:
+        print(f"Error in get_sentiment: {e}")
+        return {"sentiment": 0}
