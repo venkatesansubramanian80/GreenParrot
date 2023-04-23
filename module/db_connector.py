@@ -16,9 +16,9 @@ def insert_into_sqlite(df, table_name):
         print(e)
         return False
 
-def read_from_sqlite(table_name):
+def read_from_sqlite(sql_query):
     try:
-        df = pd.read_sql_table(table_name, con=sqlite_db_connection())
+        df = pd.read_sql_table(sql_query, con=sqlite_db_connection())
         return df
     except Exception as e:
         print(e)
