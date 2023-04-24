@@ -7,6 +7,10 @@ import pandas as pd
 app = Flask(__name__)
 api = Api(app)
 
+@app.route('/', methods=['GET'])
+def index():
+    return 'Hello World!', 200
+
 @app.route('/api/v1/get_sentiment_daa', methods=['GET'])
 def get_sentiment_daa():
     if request.method == 'GET':
@@ -39,3 +43,6 @@ def bulk_insert_sentiment_daa():
             return {'message': 'success'}, 200
         except Exception as e:
             return {'error': str(e)}, 500
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')
