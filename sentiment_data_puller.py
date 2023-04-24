@@ -32,7 +32,7 @@ def update_sentiment_daa():
 def bulk_insert_sentiment_daa():
     if request.method == 'POST':
         try:
-            # Get dataframe json from request body, convert to dataframe and insert into sqlite database
+            # Get dataframe json from request body, convert to dataframe and insert into sqlite
             data = request.get_json()
             df = pd.read_json(data)
             insert_into_sqlite(df, os.environ.get('Fundamental_News_Table'))
