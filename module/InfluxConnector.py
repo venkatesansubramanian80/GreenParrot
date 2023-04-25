@@ -1,6 +1,8 @@
-import influxdb_client
-from influxdb_client import InfluxDBClient, Point, WritePrecision
+from influxdb import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
+
+from flightsql import FlightSQLClient
+
 import os
 import requests
 import json
@@ -10,7 +12,8 @@ class InfluxConnector(object):
         self.token_val = os.environ.get('Influx_Token_Value')
 
     def write_to_influx(self, full_list):
-        self.client = influxdb_client.InfluxDBClient(url=os.environ.get('Influx_DB_URL'), token=self.token_val,
+        self.token_val = os.environ.get('Influx_Token_Value')
+        self.client = InfluxDBClient(url=os.environ.get('Influx_DB_URL'), token=self.token_val,
                                                      org=os.environ.get('Influx_Org_Name'), verify_ssl=False)
         write_api = self.client.write_api(write_options=SYNCHRONOUS)
         batch_size = 1000
@@ -19,9 +22,14 @@ class InfluxConnector(object):
         self.client.close()
 
     def read_from_influx(self, query):
-        self.client = influxdb_client.InfluxDBClient(url=os.environ.get('Influx_DB_URL'), token=self.token_val,
-                                                     org=os.environ.get('Influx_Org_Name'), verify_ssl=False)
-        query_api = self.client.query_api()
-        result = query_api.query(query)
-        self.client.close()
-        return result
+        self.token_val = os.environ.get('Influx_Token_Value')
+        self.client = FlightSQLClient(
+            host=os.environ.get('Influx_Host_Name'),
+            token=self.token_val,
+            metadata={"bucket-name": os.environ.get('Influx_Bucket_Name')})
+        info = self.client.execute(query)
+        reader = self.client.do_get(info.endpoints[0].ticket)
+
+        data = reader.read_all()
+        df = data.to_pandas()
+        return df
