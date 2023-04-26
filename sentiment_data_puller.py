@@ -15,7 +15,7 @@ def get_sentiment_daa():
     if request.method == 'GET':
         try:
             influx_connector = influx.InfluxConnector()
-            sql_query = f"SELECT date_value,Title,Source,symbol,guid,sentiment FROM {os.environ.get('Fundamental_News_Table')}"
+            sql_query = f"SELECT date_value,Title,Source,symbol,guid,sentiment FROM {os.environ.get('FUNDAMENTAL_NEWS_TABLE')}"
             df = influx_connector.read_from_influx(sql_query)
             return df.to_json(orient='records'), 200
         except Exception as e:
