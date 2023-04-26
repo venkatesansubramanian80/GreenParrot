@@ -1,6 +1,5 @@
-from influxdb import InfluxDBClient
+import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
-
 from flightsql import FlightSQLClient
 
 import os
@@ -13,8 +12,8 @@ class InfluxConnector(object):
 
     def write_to_influx(self, full_list):
         self.token_val = os.environ.get('Influx_Token_Value')
-        self.client = InfluxDBClient(url=os.environ.get('Influx_DB_URL'), token=self.token_val,
-                                                     org=os.environ.get('Influx_Org_Name'), verify_ssl=False)
+        self.client = influxdb_client.InfluxDBClient(url=os.environ.get('Influx_DB_URL'), token=self.token_val,
+                                                org=os.environ.get('Influx_Org_Name'), verify_ssl=False)
         write_api = self.client.write_api(write_options=SYNCHRONOUS)
         batch_size = 1000
         for i in range(0, len(full_list), batch_size):
