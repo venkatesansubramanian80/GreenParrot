@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 import module.InfluxConnector as influx
 import os
-import pandas as pd
 
 app = Flask(__name__)
 api = Api(app)

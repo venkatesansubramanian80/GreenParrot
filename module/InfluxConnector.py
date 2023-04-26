@@ -3,8 +3,6 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 from flightsql import FlightSQLClient
 
 import os
-import requests
-import json
 
 class InfluxConnector(object):
     def __int__(self):
