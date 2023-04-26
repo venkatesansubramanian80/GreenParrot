@@ -1,0 +1,1 @@
+web: gunicorn sentiment_data_puller:app
