@@ -27,12 +27,16 @@ influx_connector = influx.InfluxConnector()
 # Call read_from_influx method
 query = f'select * from {os.environ.get("Fundamental_News_Table")}'
 result = influx_connector.read_from_influx(query)
-print(result.columns)
 
 
 engine = sqlite_db_connection()
-df_data = pd.read_sql(f'select * from news_info', engine)
 
+
+
+# How to fix sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) near "truncate": syntax error
+# https://stackoverflow.com/questions/3300464/how-to-fix-sqlalchemy-exc-operationalerror-sqlite3-operationalerror-near-tr
+
+df_data = pd.DataFrame()
 influx_data = []
 for single_index, single_row in df_data.iterrows():
     single_influx_data = influx_frendly_data(os.environ.get("Fundamental_News_Table"),
