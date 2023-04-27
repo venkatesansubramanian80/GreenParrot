@@ -20,10 +20,12 @@ class InfluxConnector(object):
 
     def read_from_influx(self, query):
         self.token_val = os.environ.get('INFLUX_TOKEN_VALUE')
+        print(self.token_val)
         self.client = FlightSQLClient(
             host=os.environ.get('INFLUX_HOST_NAME'),
             token=self.token_val,
             metadata={"bucket-name": os.environ.get('INFLUX_BUCKET_NAME')})
+        print(self.token_val)
         info = self.client.execute(query)
         reader = self.client.do_get(info.endpoints[0].ticket)
 
