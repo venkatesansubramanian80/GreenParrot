@@ -29,7 +29,6 @@ def get_technical_data():
         try:
             influx_connector = influx.InfluxConnector()
             sql_query = f"SELECT * FROM {os.environ.get('TECHNICAL_ANALYSIS_TABLE')}"
-            print(sql_query)
             df = influx_connector.read_from_influx(sql_query)
             if(len(df) == 0):
                 return {'error': 'No Technical Analysis data found'}, 500
