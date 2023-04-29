@@ -43,6 +43,7 @@ def update_sentiment_data():
             influx_connector = influx.InfluxConnector()
             df_data = influx_connector.read_from_influx(f"select * from {os.environ.get('FUNDAMENTAL_NEWS_TABLE')} where time = '{input_date_value}' and symbol = '{input_symbol_value}' and title = '{input_title_value}'")
 
+            influx_friendly_data_list = []
             for single_index, single_row in df_data.iterrows():
                 influx_friendly_data = influx_frendly_data(
                     os.environ.get('FUNDAMENTAL_NEWS_TABLE'),
@@ -63,7 +64,8 @@ def update_sentiment_data():
                         "guid": single_row['guid']
                     }
                 )
-                influx_connector.write_to_influx([influx_friendly_data])
+                influx_friendly_data_list.append(influx_friendly_data)
+            influx_connector.write_to_influx(influx_friendly_data_list)
 
             return {'success': 'Sentiment data updated successfully'}, 200
         except Exception as e:
